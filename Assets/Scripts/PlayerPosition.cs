@@ -36,23 +36,19 @@ public class PlayerPosition : MonoBehaviour
         }
     }
 
-    public void TurnLeft(PlayerController controller)
+    public void TurnRight(PlayerController controller)
     {
-        if (viewIndex <= 0)
-        {
-            viewIndex = viewingAngles.Count - 1;
-        }
-        else viewIndex--;
+        // Disallow wrapping around
+        if (viewIndex <= 0) return;
+        viewIndex--;
         ChangeView(controller, viewingAngles[viewIndex]);
     }
 
-    public void TurnRight(PlayerController controller)
+    public void TurnLeft(PlayerController controller)
     {
-        if (viewIndex >= viewingAngles.Count - 1) // Wrap around
-        {
-            viewIndex = 0;
-        }
-        else viewIndex++;
+        // Disallow wrapping around
+        if (viewIndex >= viewingAngles.Count - 1) return;
+        viewIndex++;
         ChangeView(controller, viewingAngles[viewIndex]);
     }
 

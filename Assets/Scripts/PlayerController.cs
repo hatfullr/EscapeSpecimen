@@ -59,4 +59,14 @@ public class PlayerController : MonoBehaviour
     {
         view.playerPosition.ChangeView(this, view);
     }
+
+
+#if UNITY_EDITOR
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Vector3 origin = Camera.main.transform.position;
+        Gizmos.DrawLine(origin, origin + transform.forward * 20f);
+    }
+#endif
 }
