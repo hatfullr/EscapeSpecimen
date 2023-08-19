@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
     private void MoveForward()
     {
         Debug.Log("Move Forward", gameObject);
-        position.currentViewingAngle.moveForward.MovePlayerToThisPosition(this);
+        SetPosition(position.currentViewingAngle.moveForward);
     }
 
     private void MoveBackwards()
@@ -33,11 +33,13 @@ public class PlayerController : MonoBehaviour
     private void TurnLeft()
     {
         Debug.Log("Turn Left", gameObject);
+        position.TurnLeft(this);
     }
 
     private void TurnRight()
     {
         Debug.Log("Turn Right", gameObject);
+        position.TurnRight(this);
     }
 
 
@@ -45,9 +47,16 @@ public class PlayerController : MonoBehaviour
     public void SetPosition(PlayerPosition position)
     {
         this.position = position;
-        // Change this later when we want to preserver player direction on move
-        transform.SetPositionAndRotation(transform.position, position.firstView.transform.rotation);
-        //controller.position.player = null;
-        //player = controller;
+        position.player = this;
+
+        transform.position = position.transform.position;
+
+        // Change this later when we want to preserve player direction on move
+        SetView(position.firstView);
+    }
+
+    public void SetView(ViewingAngle view)
+    {
+        view.playerPosition.ChangeView(this, view);
     }
 }

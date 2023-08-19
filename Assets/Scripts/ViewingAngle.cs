@@ -9,10 +9,17 @@ public class ViewingAngle : MonoBehaviour
     [HideInInspector] public PlayerPosition moveForward { get => _moveForward; }
 
 
-    public void SetPlayerView(PlayerController controller)
+    private PlayerPosition _playerPosition;
+    [HideInInspector] public PlayerPosition playerPosition
     {
-        controller.transform.rotation = transform.rotation;
+        get
+        {
+            if (_playerPosition == null) _playerPosition = GetComponentInParent<PlayerPosition>(true);
+            if (_playerPosition == null) throw new System.Exception("ViewingAngle is not a child of a PlayerPosition");
+            return _playerPosition;
+        }
     }
+
 
 #if UNITY_EDITOR
     void OnDrawGizmos()

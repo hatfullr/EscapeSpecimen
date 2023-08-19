@@ -35,43 +35,35 @@ public class PlayerPosition : MonoBehaviour
             GameObject go = null;
             go = Instantiate(playerObject, null);
             PlayerController controller = go.GetComponent<PlayerController>();
-            MovePlayerToThisPosition(controller);
-            ChangeView(firstView);
+            controller.SetPosition(this);
         }
     }
 
-    public void TurnLeft()
+    public void TurnLeft(PlayerController controller)
     {
         if (viewIndex <= 0)
         {
             viewIndex = viewingAngles.Count - 1;
         }
         else viewIndex--;
-        ChangeView(viewingAngles[viewIndex]);
+        ChangeView(controller, viewingAngles[viewIndex]);
     }
 
-    public void TurnRight()
+    public void TurnRight(PlayerController controller)
     {
         if (viewIndex >= viewingAngles.Count - 1) // Wrap around
         {
             viewIndex = 0;
         }
         else viewIndex++;
-        ChangeView(viewingAngles[viewIndex]);
+        ChangeView(controller, viewingAngles[viewIndex]);
     }
 
-
-    public void MovePlayerToThisPosition(PlayerController controller)
-    {
-        controller.position = this;
-        
-    }
-
-    public void ChangeView(ViewingAngle view)
+    public void ChangeView(PlayerController controller, ViewingAngle view)
     {
         if (view == null) throw new System.Exception("Given a null view");
         if (!viewingAngles.Contains(view)) throw new System.Exception("Given view is not in the list of possible viewing angles for this position");
-        player.transform.rotation = view.transform.rotation;
+        controller.transform.rotation = view.transform.rotation;
         currentViewingAngle = view;
         viewIndex = viewingAngles.IndexOf(currentViewingAngle);
     }
