@@ -18,14 +18,11 @@ public class PlayerPosition : MonoBehaviour
 
     [HideInInspector] public ViewingAngle currentViewingAngle { get => _currentViewingAngle; private set => _currentViewingAngle = value; } 
 
-    private List<ViewingAngle> _viewingAngles;
-    private List<ViewingAngle> viewingAngles
+    private List<ViewingAngle> viewingAngles;
+
+    void Awake()
     {
-        get
-        {
-            if (_viewingAngles == null) _viewingAngles = new List<ViewingAngle>(GetComponentsInChildren<ViewingAngle>(true));
-            return _viewingAngles;
-        }
+        viewingAngles = new List<ViewingAngle>(GetComponentsInChildren<ViewingAngle>(true));
     }
 
     void Start()
