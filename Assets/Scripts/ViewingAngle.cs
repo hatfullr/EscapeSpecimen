@@ -18,6 +18,11 @@ public class ViewingAngle : MonoBehaviour
         }
     }
 
+    public void SetMoveForward(PlayerPosition position)
+    {
+        moveForward = position;
+    }
+
 
 #if UNITY_EDITOR
     void OnDrawGizmos()
