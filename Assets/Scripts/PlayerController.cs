@@ -114,8 +114,11 @@ public class PlayerController : MonoBehaviour
     void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Vector3 origin = Camera.main.transform.position;
-        Gizmos.DrawLine(origin, origin + transform.forward * 20f);
+        if (Camera.main != null)
+        {
+            Vector3 origin = Camera.main.transform.position;
+            Gizmos.DrawLine(origin, origin + transform.forward * 20f);
+        }
     }
 #endif
 }
