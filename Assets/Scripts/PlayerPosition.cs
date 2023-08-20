@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PlayerPosition : MonoBehaviour
 {
@@ -9,6 +9,10 @@ public class PlayerPosition : MonoBehaviour
     [SerializeField] private GameObject playerObject;
     [SerializeField] private bool isFirst = false;
     [SerializeField] private bool wrapViewingAngles = false;
+    [SerializeField] private GameObject indicator;
+
+    public UnityEvent onPlayerEnter;
+    public UnityEvent onPlayerExit;
 
     [Header("Debugging")]
     [SerializeField, ReadOnly] private ViewingAngle _currentViewingAngle;
@@ -71,5 +75,20 @@ public class PlayerPosition : MonoBehaviour
         viewIndex = viewingAngles.IndexOf(currentViewingAngle);
     }
 
-    
+
+    public void SetIndicator(bool state)
+    {
+        if (indicator) indicator.SetActive(state);
+    }
+
+
+#if UNITY_EDITOR
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.yellow;
+        if (isFirst)
+            Gizmos.DrawLine(transform.position, transform.position + Vector3.up * 100f);
+    }
+#endif
+
 }

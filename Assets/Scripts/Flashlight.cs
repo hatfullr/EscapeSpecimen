@@ -26,6 +26,23 @@ public class Flashlight : MonoBehaviour
         }
     }
 
+    private FlashlightIconController _iconController;
+    [HideInInspector] public FlashlightIconController iconController
+    {
+        get
+        {
+            if (_iconController == null) _iconController = FindObjectOfType<FlashlightIconController>();
+            if (_iconController == null) throw new System.Exception("Failed to find FlashlightIconController");
+            return _iconController;
+        }
+    }
+
+    void Start()
+    {
+        iconController.SetState(light.enabled);
+    }
+
+
     void LateUpdate()
     {
         SetRotation();
@@ -56,6 +73,7 @@ public class Flashlight : MonoBehaviour
     public void Toggle()
     {
         light.enabled = !light.enabled;
+        iconController.SetState(light.enabled);
     }
 
 }

@@ -28,8 +28,6 @@ public class PlayerController : MonoBehaviour
         Debug.Log("Move Forward", gameObject);
 
         StartCoroutine("MoveTransition");
-        // SetPosition in the Coroutine at the appropriate time
-        SetPosition(position.currentViewingAngle.moveForward, false);
     }
 
     private void MoveBackwards()
@@ -53,18 +51,28 @@ public class PlayerController : MonoBehaviour
 
     public void SetPosition(PlayerPosition position, bool first)
     {
+        position.SetIndicator(false);
+
+        foreach (ViewingAngle viewingAngle in position.viewingAngles)
+        {
+            if (viewingAngle.moveForward != null) viewingAngle.playerPosition.SetIndicator(true);
+        }
+
         transform.position = position.transform.position;
 
         // Change this later when we want to preserve player direction on move
         if (first) position.ChangeView(this, position.firstView);
         else
         {
-            Debug.Log(position.currentViewingAngle);
+            //Debug.Log(position.currentViewingAngle);
             position.ChangeView(this, GetClosestViewingAngle(position.currentViewingAngle.playerPosition));
         }
-
+        
         position.player = this;
         this.position = position;
+
+        if (this.position != null) this.position.onPlayerExit.Invoke();
+        position.onPlayerEnter.Invoke();
     }
 
     private ViewingAngle GetClosestViewingAngle(PlayerPosition newPosition)
@@ -112,10 +120,12 @@ public class PlayerController : MonoBehaviour
             yield return null;
         }
 
+        
+        SetPosition(position.currentViewingAngle.moveForward, false);
 
         //SetPosition should go either before or after the following while
         //Wait a moment
-        while(waitTime >= 0)
+        while (waitTime >= 0)
         {
             waitTime -= Time.deltaTime;
             yield return null;
