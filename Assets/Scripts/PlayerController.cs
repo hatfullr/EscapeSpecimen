@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 public class PlayerController : MonoBehaviour
 {
@@ -11,7 +12,7 @@ public class PlayerController : MonoBehaviour
     [Header("Debugging")]
     [ReadOnly] public PlayerPosition position;
 
-
+    public UnityEvent startMove;
 
 
     void Update()
@@ -98,6 +99,8 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private IEnumerator MoveTransition()
     {
+        startMove.Invoke();
+        
         //Toggle player input off
 
         float fadeInOutTime = 3;
