@@ -29,8 +29,7 @@ public class PlayerController : MonoBehaviour
 
         StartCoroutine("MoveTransition");
         // SetPosition in the Coroutine at the appropriate time
-        SetPosition(position.currentViewingAngle.moveForward);
-        
+        SetPosition(position.currentViewingAngle.moveForward, false);
     }
 
     private void MoveBackwards()
@@ -52,20 +51,38 @@ public class PlayerController : MonoBehaviour
 
 
 
-    public void SetPosition(PlayerPosition position)
+    public void SetPosition(PlayerPosition position, bool first)
     {
-        this.position = position;
-        position.player = this;
-
         transform.position = position.transform.position;
 
         // Change this later when we want to preserve player direction on move
-        SetView(position.firstView);
+        if (first) position.ChangeView(this, position.firstView);
+        else
+        {
+            Debug.Log(position.currentViewingAngle);
+            position.ChangeView(this, GetClosestViewingAngle(position.currentViewingAngle.playerPosition));
+        }
+
+        position.player = this;
+        this.position = position;
     }
 
-    public void SetView(ViewingAngle view)
+    private ViewingAngle GetClosestViewingAngle(PlayerPosition newPosition)
     {
-        view.playerPosition.ChangeView(this, view);
+        Vector3 currentDirection = transform.forward;
+        float minangle = float.PositiveInfinity;
+        ViewingAngle match = null;
+        foreach (ViewingAngle viewingAngle in newPosition.viewingAngles)
+        {
+            float angle = Vector3.Angle(viewingAngle.transform.forward, currentDirection);
+            if (angle < minangle)
+            {
+                minangle = angle;
+                match = viewingAngle;
+            }
+        }
+
+        return match;
     }
 
     /// <summary>

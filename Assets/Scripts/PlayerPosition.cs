@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerPosition : MonoBehaviour
@@ -7,8 +8,7 @@ public class PlayerPosition : MonoBehaviour
     public ViewingAngle firstView;
     [SerializeField] private GameObject playerObject;
     [SerializeField] private bool isFirst = false;
-
-
+    [SerializeField] private bool wrapViewingAngles = false;
 
     [Header("Debugging")]
     [SerializeField, ReadOnly] private ViewingAngle _currentViewingAngle;
@@ -18,11 +18,13 @@ public class PlayerPosition : MonoBehaviour
 
     [HideInInspector] public ViewingAngle currentViewingAngle { get => _currentViewingAngle; private set => _currentViewingAngle = value; } 
 
-    private List<ViewingAngle> viewingAngles;
+    [HideInInspector] public List<ViewingAngle> viewingAngles;
 
     void Awake()
     {
         viewingAngles = new List<ViewingAngle>(GetComponentsInChildren<ViewingAngle>(true));
+        if (firstView != null) currentViewingAngle = firstView;
+        else currentViewingAngle = viewingAngles[0];
     }
 
     void Start()
@@ -32,14 +34,18 @@ public class PlayerPosition : MonoBehaviour
             GameObject go = null;
             go = Instantiate(playerObject, null);
             PlayerController controller = go.GetComponent<PlayerController>();
-            controller.SetPosition(this);
+            controller.SetPosition(this, true);
         }
     }
 
     public void TurnRight(PlayerController controller)
     {
         // Disallow wrapping around
-        if (viewIndex <= 0) return;
+        if (viewIndex <= 0)
+        {
+            if (!wrapViewingAngles) return;
+            viewIndex = viewingAngles.Count;
+        }
         viewIndex--;
         ChangeView(controller, viewingAngles[viewIndex]);
     }
@@ -47,7 +53,11 @@ public class PlayerPosition : MonoBehaviour
     public void TurnLeft(PlayerController controller)
     {
         // Disallow wrapping around
-        if (viewIndex >= viewingAngles.Count - 1) return;
+        if (viewIndex >= viewingAngles.Count - 1)
+        {
+            if (!wrapViewingAngles) return;
+            viewIndex = -1;
+        }
         viewIndex++;
         ChangeView(controller, viewingAngles[viewIndex]);
     }
@@ -60,4 +70,6 @@ public class PlayerPosition : MonoBehaviour
         currentViewingAngle = view;
         viewIndex = viewingAngles.IndexOf(currentViewingAngle);
     }
+
+    
 }
