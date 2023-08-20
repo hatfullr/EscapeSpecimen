@@ -1,18 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
-    
+    // Reference the Fade Image under the Player HUD in the object/prefab Heirarchy
+    public Image fadeImage;
 
     [Header("Debugging")]
     [ReadOnly] public PlayerPosition position;
 
-    
+
+
+
     void Update()
     {
+        //only do these if the player is not going through a fade transition
         if (Input.GetKeyDown(KeyCode.W)) MoveForward();
         if (Input.GetKeyDown(KeyCode.S)) MoveBackwards();
         if (Input.GetKeyDown(KeyCode.A)) TurnLeft();
@@ -23,6 +27,7 @@ public class PlayerController : MonoBehaviour
     {
         Debug.Log("Move Forward", gameObject);
         SetPosition(position.currentViewingAngle.moveForward);
+        StartCoroutine("MoveTransition");
     }
 
     private void MoveBackwards()
@@ -58,6 +63,50 @@ public class PlayerController : MonoBehaviour
     public void SetView(ViewingAngle view)
     {
         view.playerPosition.ChangeView(this, view);
+    }
+
+    /// <summary>
+    /// Lerps transparency on Fade Image over t(time) to create the fade in/out when moving
+    /// </summary>
+    private IEnumerator MoveTransition()
+    {
+        //Toggle player input off
+
+        float fadeInOutTime = 3;
+        float waitTime = 1;
+
+        //quick find since I can't seem to get the reference box to show in the script inspector
+        if (fadeImage == null)
+        {
+            fadeImage = GameObject.Find("Fade Image").GetComponent<Image>();
+        }
+        Color fadeColor = fadeImage.color;
+        float fadeAmount;
+
+        //Fade to black
+        while (fadeImage.color.a <= 1)
+        {
+            fadeAmount = fadeColor.a + (fadeInOutTime * Time.deltaTime);
+            fadeColor.a = fadeAmount;
+            fadeImage.color = fadeColor;
+            yield return null;
+        }
+        //Move Player
+        //Wait a moment
+        while(waitTime >= 0)
+        {
+            waitTime -= Time.deltaTime;
+            yield return null;
+        }
+        //Fade in
+        while (fadeImage.color.a >= 0)
+        {
+            fadeAmount = fadeColor.a - (fadeInOutTime * Time.deltaTime);
+            fadeColor.a = fadeAmount;
+            fadeImage.color = fadeColor;
+            yield return null;
+        }
+        //Toggle player input on.
     }
 
 
