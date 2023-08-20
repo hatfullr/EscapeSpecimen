@@ -26,8 +26,11 @@ public class PlayerController : MonoBehaviour
     private void MoveForward()
     {
         Debug.Log("Move Forward", gameObject);
-        SetPosition(position.currentViewingAngle.moveForward);
+
         StartCoroutine("MoveTransition");
+        // SetPosition in the Coroutine at the appropriate time
+        SetPosition(position.currentViewingAngle.moveForward);
+        
     }
 
     private void MoveBackwards()
@@ -91,13 +94,17 @@ public class PlayerController : MonoBehaviour
             fadeImage.color = fadeColor;
             yield return null;
         }
-        //Move Player
+
+
+        //SetPosition should go either before or after the following while
         //Wait a moment
         while(waitTime >= 0)
         {
             waitTime -= Time.deltaTime;
             yield return null;
         }
+
+
         //Fade in
         while (fadeImage.color.a >= 0)
         {
