@@ -4,9 +4,7 @@ using UnityEngine;
 
 public class ViewingAngle : MonoBehaviour
 {
-    [SerializeField] private PlayerPosition _moveForward;
-
-    [HideInInspector] public PlayerPosition moveForward { get => _moveForward; }
+    public PlayerPosition moveForward;
 
 
     private PlayerPosition _playerPosition;

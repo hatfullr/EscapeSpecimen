@@ -5,9 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(Snappable))]
 public class InventorySlot : MonoBehaviour
 {
-    [SerializeField, ReadOnly] private bool _occupied = false;
-
-    [HideInInspector] public bool occupied { get => _occupied; private set => _occupied = value; }
+    [ReadOnly] public bool occupied = false;
 
     private Snappable _snappable;
     [HideInInspector] public Snappable snappable
@@ -22,10 +20,11 @@ public class InventorySlot : MonoBehaviour
 
     public void Occupy(InventoryIcon icon)
     {
-        occupied = true;
-
+        Debug.Log("Occupy " + icon.slot,gameObject);
+        if (icon.slot != null) icon.slot.occupied = false;
         icon.transform.SetParent(transform, false);
-        //icon.transform.localPosition = transform.localPosition;
+        icon.slot = this;
+        occupied = true;
     }
 
 }

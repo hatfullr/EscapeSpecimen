@@ -9,7 +9,7 @@ public class PlayerPosition : MonoBehaviour
     [SerializeField] private GameObject playerObject;
     [SerializeField] private bool isFirst = false;
     [SerializeField] private bool wrapViewingAngles = false;
-    [SerializeField] private GameObject indicator;
+    [SerializeField] private GameObject _indicator;
 
     public UnityEvent onPlayerEnter;
     public UnityEvent onPlayerExit;
@@ -20,6 +20,9 @@ public class PlayerPosition : MonoBehaviour
     [ReadOnly] public PlayerController player;
 
 
+    [HideInInspector] public GameObject indicator { get => _indicator; }
+
+
     [HideInInspector] public ViewingAngle currentViewingAngle { get => _currentViewingAngle; private set => _currentViewingAngle = value; } 
 
     [HideInInspector] public List<ViewingAngle> viewingAngles;
@@ -27,8 +30,10 @@ public class PlayerPosition : MonoBehaviour
     void Awake()
     {
         viewingAngles = new List<ViewingAngle>(GetComponentsInChildren<ViewingAngle>(true));
+        viewingAngles.Reverse();
         if (firstView != null) currentViewingAngle = firstView;
         else currentViewingAngle = viewingAngles[0];
+        if (indicator != null) indicator.gameObject.SetActive(false);
     }
 
     void Start()
@@ -70,17 +75,26 @@ public class PlayerPosition : MonoBehaviour
     {
         if (view == null) throw new System.Exception("Given a null view");
         if (!viewingAngles.Contains(view)) throw new System.Exception("Given view is not in the list of possible viewing angles for this position");
+
+        if (currentViewingAngle.moveForward != null)
+        {
+            currentViewingAngle.moveForward.indicator.SetActive(false);
+        }
+
         controller.transform.rotation = view.transform.rotation;
         currentViewingAngle = view;
         viewIndex = viewingAngles.IndexOf(currentViewingAngle);
-    }
 
+        if (currentViewingAngle.moveForward != null)
+        {
+            currentViewingAngle.moveForward.indicator.SetActive(true);
+        }
+    }
 
     public void SetIndicator(bool state)
     {
         if (indicator) indicator.SetActive(state);
     }
-
 
 #if UNITY_EDITOR
     void OnDrawGizmos()

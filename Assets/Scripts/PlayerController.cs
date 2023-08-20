@@ -68,6 +68,8 @@ public class PlayerController : MonoBehaviour
             //Debug.Log(position.currentViewingAngle);
             position.ChangeView(this, GetClosestViewingAngle(position.currentViewingAngle.playerPosition));
         }
+
+        if (position.indicator != null) position.indicator.SetActive(false);
         
         position.player = this;
         this.position = position;

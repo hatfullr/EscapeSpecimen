@@ -17,7 +17,7 @@ public class FlashlightIconController : MonoBehaviour
         }
         else
         {
-            offImage.gameObject.SetActive(false);
+            offImage.gameObject.SetActive(true);
             onImage.gameObject.SetActive(false);
         }
     }

@@ -2,11 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteAlways, RequireComponent(typeof(BoxCollider))]
+[ExecuteInEditMode, RequireComponent(typeof(BoxCollider))]
 public class FitBoxColliderToRenderers : MonoBehaviour
 {
+    [SerializeField] private Transform _transformToFit;
     [SerializeField] private Alignment alignment = Alignment.Center;
     [SerializeField, Min(0f)] private Vector3 minimumScale = Vector3.zero;
+
+    [HideInInspector] public Transform transformToFit { get => _transformToFit; }
 
     private BoxCollider _boxCollider;
     private BoxCollider boxCollider
@@ -23,7 +26,12 @@ public class FitBoxColliderToRenderers : MonoBehaviour
     {
         get
         {
-            if (_renderers == null) _renderers = new List<Renderer>(GetComponentsInChildren<Renderer>());
+            if (_renderers == null)
+            {
+                if (transformToFit == null)
+                    _renderers = new List<Renderer>(GetComponentsInChildren<Renderer>());
+                else _renderers = new List<Renderer>(transformToFit.GetComponentsInChildren<Renderer>());
+            }
             return _renderers;
         }
     }
@@ -40,6 +48,7 @@ public class FitBoxColliderToRenderers : MonoBehaviour
 
     void Update()
     {
+        if (Application.isPlaying) return;
         if (renderers.Count > 0)
         {
             Bounds bounds = GetBounds();
@@ -71,7 +80,7 @@ public class FitBoxColliderToRenderers : MonoBehaviour
         min -= transform.position;
         max -= transform.position;
 
-        Vector3 inverseLocalScale = new Vector3(1f / transform.localScale.x, 1f / transform.localScale.y, 1f / transform.localScale.z);
+        Vector3 inverseLocalScale = new Vector3(1f / transform.lossyScale.x, 1f / transform.lossyScale.y, 1f / transform.lossyScale.z);
 
         min.x *= inverseLocalScale.x;
         min.y *= inverseLocalScale.y;
@@ -80,17 +89,17 @@ public class FitBoxColliderToRenderers : MonoBehaviour
         max.y *= inverseLocalScale.y;
         max.z *= inverseLocalScale.z;
 
-        if (transform.localScale.x == 0)
+        if (transform.lossyScale.x == 0)
         {
             min.x = 0f;
             max.x = 0f;
         }
-        if (transform.localScale.y == 0)
+        if (transform.lossyScale.y == 0)
         {
             min.y = 0f;
             max.y = 0f;
         }
-        if (transform.localScale.z == 0)
+        if (transform.lossyScale.z == 0)
         {
             min.z = 0f;
             max.z = 0f;
