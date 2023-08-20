@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(RectTransform))]
 public class Draggable : MonoBehaviour, IDragHandler, IPointerUpHandler, IPointerDownHandler
@@ -66,6 +67,7 @@ public class Draggable : MonoBehaviour, IDragHandler, IPointerUpHandler, IPointe
             data = new PointerEventData(EventSystem.current);
             data.position = Input.mousePosition;
         }
+
         StartDrag(data);
         pickedUp = true;
         firstFramePickedUp = true;
@@ -74,6 +76,43 @@ public class Draggable : MonoBehaviour, IDragHandler, IPointerUpHandler, IPointe
     public void SetDown()
     {
         if (!enabled) return;
+
+        InventoryIcon icon = GetComponent<InventoryIcon>();
+        if (icon != null)
+        {
+            PointerEventData data = new PointerEventData(EventSystem.current);
+            data.position = Input.mousePosition;
+
+            Draggable draggable = GetTopDraggable(data);
+            if (draggable != null)
+            {
+                Image image = draggable.GetComponent<Image>();
+                if (image != null)
+                {
+                    image.raycastTarget = true;
+                }
+            }
+
+            Snappable snappable = GetTopSnappable(data);
+            if (snappable != null)
+            {
+                InventorySlot slot = snappable.GetComponent<InventorySlot>();
+                if (slot != null)
+                {
+                    if (slot.occupied && icon.slot != null) icon.SendBackToSlot();
+                    else slot.Occupy(icon);
+                }
+            }
+            else
+            {
+                InventoryItemAcceptor acceptor = GetTopAcceptor(data);
+                if (acceptor != null)
+                {
+                    if (acceptor.CanAccept(icon)) acceptor.AcceptItem(icon);
+                }
+            }
+        }
+
         pickedUp = false;
         onDragFinished.Invoke();
     }
@@ -98,6 +137,12 @@ public class Draggable : MonoBehaviour, IDragHandler, IPointerUpHandler, IPointe
             // If there's any draggables on top of this one, then drag that instead.
             Draggable draggable = GetTopDraggable(data);
             draggable.StartDrag(data);
+
+            Image image = draggable.GetComponent<Image>();
+            if (image != null)
+            {
+                image.raycastTarget = false;
+            }
         }
     }
 
@@ -174,6 +219,19 @@ public class Draggable : MonoBehaviour, IDragHandler, IPointerUpHandler, IPointe
         {
             Draggable draggable = hit.gameObject.GetComponent<Draggable>();
             if (draggable != null) return draggable;
+        }
+        return null;
+    }
+
+    public InventoryItemAcceptor GetTopAcceptor(PointerEventData data)
+    {
+        // Do a raycast through the mouse position to check for any Snappable objects
+        Ray ray = Camera.main.ScreenPointToRay(data.position);
+        List<RaycastResult> hits = new List<RaycastResult>();
+        if (Physics.Raycast(ray, out RaycastHit hit))
+        {
+            InventoryItemAcceptor acceptor = hit.collider.gameObject.GetComponent<InventoryItemAcceptor>();
+            if (acceptor != null) return acceptor;
         }
         return null;
     }

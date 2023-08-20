@@ -12,7 +12,7 @@ public class Inventory : MonoBehaviour
             if (_slots == null)
             {
                 _slots = new List<InventorySlot>(GetComponentsInChildren<InventorySlot>(true));
-                _slots.Reverse();
+                //_slots.Reverse();
             }
             return _slots;
         }
@@ -20,13 +20,18 @@ public class Inventory : MonoBehaviour
 
     public void AddToInventory(InventoryItem item)
     {
+        bool success = false;
         foreach (InventorySlot slot in slots)
         {
             if (!slot.occupied)
             {
                 slot.Occupy(item.icon);
+                success = true;
+                break;
             }
         }
+
+        if (!success) throw new System.NotImplementedException("Help");
 
         Destroy(item.gameObject);
     }
