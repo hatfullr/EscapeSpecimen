@@ -52,8 +52,7 @@ public class LightDetector : MonoBehaviour
 
     void Update()
     {
-        // Obtain all Light components in the scene
-        lights = new List<Light>(FindObjectsOfType<Light>());
+        lights = new List<Light>(FindObjectsOfType<Light>(true));
         contributingLights.Clear();
 
         nlights = lights.Count;
@@ -92,6 +91,16 @@ public class LightDetector : MonoBehaviour
                 }
             }
         }
+    }
+
+    public float GetMaximumIntensity()
+    {
+        float result = -float.PositiveInfinity;
+        foreach (Light light in contributingLights)
+        {
+            result = Mathf.Max(result, light.intensity);
+        }
+        return result;
     }
 }
 

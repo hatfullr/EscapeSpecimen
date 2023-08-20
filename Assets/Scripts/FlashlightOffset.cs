@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class FlashlightOffset : MonoBehaviour
 {
-    [SerializeField] private float amount = 0.1f;
+    [SerializeField] private float amount = 1f;
 
     private PlayerController _player;
     [HideInInspector] public PlayerController player
@@ -28,8 +28,6 @@ public class FlashlightOffset : MonoBehaviour
         }
     }
 
-    private Vector2 originalScreenPosition;
-
     private Vector3 previousMousePosition;
 
 
@@ -42,10 +40,9 @@ public class FlashlightOffset : MonoBehaviour
 
     private void SetPosition()
     {
-        //Vector2 offset = (Input.mousePosition - previousMousePosition) * amount;
         Vector3 world1 = flashlight.ScreenToWorldPosition(Input.mousePosition);
         Vector3 world2 = flashlight.ScreenToWorldPosition(previousMousePosition);
-        Vector3 offset = world1 - world2;
+        Vector3 offset = (world1 - world2) * amount;
         transform.position += offset;
     }
 }
