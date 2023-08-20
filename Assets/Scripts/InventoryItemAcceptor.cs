@@ -6,20 +6,22 @@ using UnityEngine.Events;
 public class InventoryItemAcceptor : MonoBehaviour
 {
     [SerializeField] private InventoryIconEnum acceptedTypes;
+    [SerializeField] private bool destroyOnAccept = true;
+
 
     [SerializeField] private UnityEvent onItemAccepted;
-    
-    
+
+
+    private void Start() { }
 
     public void AcceptItem(InventoryIcon icon)
     {
-        Debug.Log("Accept Item");
-        Destroy(icon.gameObject);
+        if (destroyOnAccept) Destroy(icon.gameObject);
         onItemAccepted.Invoke();
     }
 
     public bool CanAccept(InventoryIcon icon)
     {
-        return acceptedTypes.HasFlag(icon.type);
+        return enabled && acceptedTypes.HasFlag(icon.type);
     }
 }
